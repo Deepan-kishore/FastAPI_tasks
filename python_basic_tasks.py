@@ -16,6 +16,7 @@ def factorial(n):
         return 1
     else:
         return n * factorial(n - 1)
+factorial(5)
 
 
 # 4. Filter even numbers from list
@@ -39,3 +40,4 @@ def basic_calculator(operation, p1, p2):
             return p1 / p2
         case _:
             return "invalid operation"
+basic_calculator('add', 2,2)
