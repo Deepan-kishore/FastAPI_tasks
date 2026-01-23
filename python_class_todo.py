@@ -1,3 +1,6 @@
+import os
+import json
+
 actions = {
     "notCompleted": "Not Completed",
     "Started": "Started",
@@ -9,7 +12,39 @@ class Todo:
 
     def __init__(self) -> None:
         self.todo: dict[str, str] = {}
+        self.file_path = "todo_data.json"
+        self.load_from_file()
         return
+
+    def load_from_file(self) -> None:
+        """Load todo from json file if it exists"""
+        if os.path.exists(self.file_path):
+            try:
+                with open(self.file_path) as file:
+                    self.todo = json.load(file)
+            except (json.JSONDecodeError, IOError):
+                print("Error while reading file, starting with empty list")
+                self.todo = {}
+        else:
+            print("File does not exist, Attempting to create file")
+            try:
+                with open(self.file_path, "x") as file:
+                    json.dump({}, file)
+                    self.todo = json.load(file)
+            except:
+                print("Error while creating file")
+            else:
+                print("File created")
+
+        return
+
+    def save_to_file(self) -> None:
+        """Save todo list to JSON file"""
+        try:
+            with open(self.file_path, "w") as file:
+                json.dump(self.todo, file, indent=2)
+        except IOError:
+            print("Error Saving file")
 
     def isNew(self, item, action, minCheck=False):
         isNew = True if not self.todo.get(item) else False
@@ -44,10 +79,11 @@ class Todo:
         if not isNew:
             return "Already present"
         self.todo[item] = action
+        self.save_to_file()
         return "Item added successfully"
 
     def getAll(self) -> str | dict[str, str]:
-        return self.todo 
+        return self.todo
 
     def getOne(self, item) -> str:
         isNew = self.isNew(item, None, True)
@@ -60,6 +96,7 @@ class Todo:
         isNew = self.isNew(item, action)
         if not isNew:
             self.todo.update({item: action})
+            self.save_to_file()
         return "Updated"
 
     def delete(self, item) -> str:
@@ -67,6 +104,7 @@ class Todo:
         if isNew:
             return "Item Not Present"
         self.todo.pop(item)
+        self.save_to_file()
         return "Item deleted Successfully"
 
 
