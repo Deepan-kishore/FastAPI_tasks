@@ -1,5 +1,6 @@
 from app.db.utils import load_file, write_to_file
 from datetime import datetime
+import os
 
 
 class ApiResponse:
@@ -32,7 +33,9 @@ class Todo:
     @classmethod
     async def TodoConstructor(cls):
         instance = cls()
-        instance.path = "todo.json"
+        # Use absolute path for todo.json
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        instance.path = os.path.join(base_dir, "todo.json")
         # await load file
         todo = await load_file(instance.path)
         instance.todo = todo
